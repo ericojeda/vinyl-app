@@ -40,9 +40,16 @@ class InsertRecords extends Command
      */
     public function handle()
     {
-        $jsonget = CurlHelper::hitApi('https://api.discogs.com/users/'.env('DISCOGS_USERNAME').'/collection/folders/0/releases?token='. env('DISCOGS_TOKEN'));
-
+        $url = 'https://api.discogs.com/users/'.env('DISCOGS_USERNAME').'/collection/folders/0/releases?token='. env('DISCOGS_TOKEN');
+        $jsonget = CurlHelper::hitApi($url);
         $this->insertReleases($jsonget['releases']);
+        $this->info('Page ' . $jsonget['pagination']['page'] . ' Inserted');
+
+        while(isset($jsonget['pagination']['urls']['next'])) {
+            $jsonget = CurlHelper::hitApi($jsonget['pagination']['urls']['next']);
+            $this->insertReleases($jsonget['releases']);
+            $this->info('Page ' . $jsonget['pagination']['page'] . ' Inserted');
+        }
     }
 
     private function insertReleases($releases)
