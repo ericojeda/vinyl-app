@@ -27,5 +27,6 @@
 //$this->post('password/reset', 'Auth\ResetPasswordController@reset');
 
 Route::get('/', function () {
-    return view('welcome');
+    $records = \App\Record::all();
+    return view('home', ['records' => $records]);
 });
