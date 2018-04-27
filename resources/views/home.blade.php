@@ -7,7 +7,7 @@
             <h1>Records List</h1>
             <ul>
                 @foreach($records as $record)
-                    <li>{{$record->title}}</li>
+                    <li><a href="{{route('record', [$record->id])}}">{{$record->title}}</a></li>
                 @endforeach
             </ul>
         </div>

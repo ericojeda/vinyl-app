@@ -30,3 +30,7 @@ Route::get('/', function () {
     $records = \App\Record::all();
     return view('home', ['records' => $records]);
 });
+
+Route::get('record/{record}', function ($record) {
+    return view('record', ['record' => $record]);
+})->name('record');
