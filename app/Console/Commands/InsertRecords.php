@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Artist;
+use App\CurlHelper;
+use App\Record;
+use Illuminate\Console\Command;
+
+class InsertRecords extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'records:insert';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $jsonget = CurlHelper::hitApi('https://api.discogs.com/users/'.env('DISCOGS_USERNAME').'/collection/folders/0/releases?token='. env('DISCOGS_TOKEN'));
+
+        $this->insertReleases($jsonget['releases']);
+    }
+
+    private function insertReleases($releases)
+    {
+        foreach($releases as $release) {
+            $binfo = $release['basic_information'];
+
+            Artist::updateOrCreate([
+                'id' => $binfo['artists'][0]['id']
+            ],[
+                'name' => $binfo['artists'][0]['name']
+            ]);
+
+            Record::updateOrCreate([
+                'id' => $release['instance_id']
+            ],[
+                'title' => $binfo['title'],
+                'year' => $binfo['year'],
+                'thumb' => $binfo['thumb'],
+                'cover' => $binfo['cover_image'],
+                'fields' => isset($release['notes']) ? $release['notes'] : [],
+                'artist_id' => $binfo['artists'][0]['id'],
+                'folder_id' => $release['folder_id']
+            ]);
+        }
+    }
+}
