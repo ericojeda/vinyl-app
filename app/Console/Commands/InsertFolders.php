@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\CurlHelper;
 use App\Folder;
 use Illuminate\Console\Command;
 
@@ -38,14 +39,8 @@ class InsertFolders extends Command
      */
     public function handle()
     {
-        $curl_handle=curl_init();
-        curl_setopt($curl_handle, CURLOPT_URL,'https://api.discogs.com/users/'.env('DISCOGS_USERNAME').'/collection/folders?token='. env('DISCOGS_TOKEN'));
-        curl_setopt($curl_handle, CURLOPT_CONNECTTIMEOUT, 2);
-        curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl_handle, CURLOPT_USERAGENT, 'record-app');
-        $query = curl_exec($curl_handle);
-        curl_close($curl_handle);
-        $jsonget = json_decode($query, true);
+        $url = 'https://api.discogs.com/users/'.env('DISCOGS_USERNAME').'/collection/folders?token='. env('DISCOGS_TOKEN');
+        $jsonget = CurlHelper::hitApi($url);
 
         foreach ($jsonget['folders'] as $folder) {
             $this->info($folder['name']);
