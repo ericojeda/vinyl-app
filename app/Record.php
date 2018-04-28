@@ -22,4 +22,9 @@ class Record extends Model
     protected $casts = [
         'fields' => 'array'
     ];
+
+    public function fields()
+    {
+        return $this->belongsToMany('App\Field')->withPivot('value')->withTimestamps();
+    }
 }

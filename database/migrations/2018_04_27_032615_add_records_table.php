@@ -14,7 +14,8 @@ class AddRecordsTable extends Migration
     public function up()
     {
         Schema::create('records', function (Blueprint $table) {
-            $table->integer('id')->unique();
+            $table->integer('id')->unsigned();
+            $table->primary('id');
             $table->string('title');
             $table->integer('artist_id')->unsigned()->index();
             $table->foreign('artist_id')
@@ -27,7 +28,6 @@ class AddRecordsTable extends Migration
             $table->string('year');
             $table->string('thumb');
             $table->string('cover');
-            $table->text('fields');
             $table->timestamps();
         });
     }

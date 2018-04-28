@@ -63,17 +63,21 @@ class InsertRecords extends Command
                 'name' => $binfo['artists'][0]['name']
             ]);
 
-            Record::updateOrCreate([
+            $record = Record::updateOrCreate([
                 'id' => $release['instance_id']
             ],[
                 'title' => $binfo['title'],
                 'year' => $binfo['year'],
                 'thumb' => $binfo['thumb'],
                 'cover' => $binfo['cover_image'],
-                'fields' => isset($release['notes']) ? $release['notes'] : [],
                 'artist_id' => $binfo['artists'][0]['id'],
                 'folder_id' => $release['folder_id']
             ]);
+
+            if(isset($release['notes'])) {
+                $sync_arr = collect($release['notes'])->keyBy('field_id');
+                $record->fields()->sync($sync_arr);
+            }
         }
     }
 }
