@@ -27,8 +27,23 @@
 //$this->post('password/reset', 'Auth\ResetPasswordController@reset');
 
 Route::get('/', function () {
-    $records = \App\Record::all();
-    return view('home', ['records' => $records]);
+    $records = \App\Record::whereHas('fields', function($query) {
+        $query->where('name', 'With Me');
+    })->get();
+
+    $count = $records->count();
+
+    $records = $records->sortBy(function($item){
+        if (strpos($item->artist->name, "The ") === 0) {
+            return substr($item->artist->name, 4);
+        }
+        return $item->artist->name;
+    })
+    ->groupBy(function($item) {
+        return $item->artist->name;
+    });
+    //dd($records);
+    return view('home', ['records' => $records, 'count' => $count]);
 });
 
 Route::get('record/{record}', function ($record) {

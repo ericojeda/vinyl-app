@@ -12,4 +12,9 @@ class Artist extends Model
         'id',
         'name'
     ];
+
+    public function records()
+    {
+        return $this->hasMany('App\Record');
+    }
 }

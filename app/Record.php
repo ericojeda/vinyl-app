@@ -27,4 +27,9 @@ class Record extends Model
     {
         return $this->belongsToMany('App\Field')->withPivot('value')->withTimestamps();
     }
+
+    public function artist()
+    {
+        return $this->belongsTo('App\Artist');
+    }
 }
