@@ -49,3 +49,11 @@ Route::get('/', function () {
 Route::get('record/{record}', function ($record) {
     return view('record', ['record' => $record]);
 })->name('record');
+
+Route::get('/vuelist', function() {
+    return view('vuetest');
+});
+
+Route::get('/folders', function() {
+    return new \App\Http\Resources\FolderCollection(\App\Folder::orderBy('name')->get());
+});
